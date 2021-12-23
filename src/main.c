@@ -16,49 +16,50 @@
 #include "ece198.h"
 
 // this is a flatened binary tree with n being the index
-// increasing n by 2 will traverse it's left branch while 2n+1 will traverse it's right
-// please see this image of an unflattened version of the tree
+// increasing n by 2 will traverse it's left branch while 2n+1 will traverse
+// it's right please see this image of an unflattened version of the tree
 // https://en.wikipedia.org/wiki/Morse_code#/media/File:Morse_code_tree3.png
 uint16_t n = 1;
 const char* letter = "**ETIANMSURWDKGOHVF?L?PJBXCYZQ??";
 
-// this is the time unit for a dit in morse code (also simply known as a time unit)
-// there is code to allow ut to be readjustable as seen on line 51 - 62 but
-// the user inputted time unit is often inaccurate (whether due to human error or code is unknown)
-uint32_t ut = 333;
-
 int main(void) {
     HAL_Init();  // initialize the Hardware Abstraction Layer
-    // Peripherals (including GPIOs) are disabled by default to save power, so we
-    // use the Reset and Clock Control registers to enable the GPIO peripherals that we're using.
-    __HAL_RCC_GPIOA_CLK_ENABLE();  // enable port A (for the on-board LED, for example)
-    __HAL_RCC_GPIOB_CLK_ENABLE();  // enable port B (for the rotary encoder inputs, for example)
-    __HAL_RCC_GPIOC_CLK_ENABLE();  // enable port C (for the on-board blue pushbutton, for example)
+    // Peripherals (including GPIOs) are disabled by default to save power, so
+    // we use the Reset and Clock Control registers to enable the GPIO
+    // peripherals that we're using.
+    __HAL_RCC_GPIOA_CLK_ENABLE();  // enable port A (for the on-board LED, for
+                                   // example)
+    __HAL_RCC_GPIOB_CLK_ENABLE();  // enable port B (for the rotary encoder
+                                   // inputs, for example)
+    __HAL_RCC_GPIOC_CLK_ENABLE();  // enable port C (for the on-board blue
+                                   // pushbutton, for example)
     // initialize the pins to be input, output, alternate function, etc...
-    InitializePin(GPIOA, GPIO_PIN_9, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0);  // on-board LED
-    // note: the on-board pushbutton is fine with the default values (no internal pull-up resistor
-    // is required, since there's one on the board)
+    InitializePin(GPIOA, GPIO_PIN_9, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL,
+                  0);  // on-board LED
+    // note: the on-board pushbutton is fine with the default values (no
+    // internal pull-up resistor is required, since there's one on the board)
     // set up for serial communication to the host computer
-    // (anything we write to the serial port will appear in the terminal (i.e. serial monitor) in VSCode)
+    // (anything we write to the serial port will appear in the terminal (i.e.
+    // serial monitor) in VSCode)
     SerialSetup(9600);
     // as mentioned above, only one of the following code sections will be used
-    // (depending on which of the #define statements at the top of this file has been uncommented)
+    // (depending on which of the #define statements at the top of this file has
+    // been uncommented)
 
     // used to track the difference in time between button presses
     uint64_t t1 = 0, t2 = 0;
-
     // to set the time unit for morse code
     // print morse code to output explaining to set a time unit hold the button
-    // while (debounce1()) {
-    // }
-    // t1 = HAL_GetTick();
-    // while (debounce2()) {
-    // }
-    // t2 = HAL_GetTick();
-    // uint32_t ut = t2-t1;
-    // SerialPuts(ut);
-    // this is currently commented out as for testing/prototyping purposes 333 ms
-    // is a lot more reasonabale of a time than something like 50ms
+    while (debounce1()) {
+    }
+    t1 = HAL_GetTick();
+    while (debounce2()) {
+    }
+    t2 = HAL_GetTick();
+    uint32_t ut = t2 - t1;
+    SerialPuts(ut);
+    // this is currently commented out as for testing/prototyping purposes 333
+    // ms is a lot more reasonable of a time than something like 50ms
 
     // to continuously loop the process
     while (1) {
@@ -71,7 +72,7 @@ int main(void) {
         question1();
         // loop to check button state
         while (state) {
-            //question output
+            // question output
             if (debounce1()) {
                 // find when the button was pressed
                 t1 = HAL_GetTick();
@@ -80,12 +81,11 @@ int main(void) {
                 // find when it was released and for how long
                 t2 = HAL_GetTick();
                 // if the time difference is a dit (accounting for human error)
-                if ((t2 - t1) < 1.5 * ut)
-                    shortPress();
+                if ((t2 - t1) < 1.5 * ut) shortPress();
                 // if the time difference is a dash (accounting for human error)
-                if (((t2 - t1) > 2 * ut) && ((t2 - t1) < 4 * ut))
-                    longPress();
-                // if the time difference is an enter (accounting for human error)
+                if (((t2 - t1) > 2 * ut) && ((t2 - t1) < 4 * ut)) longPress();
+                // if the time difference is an enter (accounting for human
+                // error)
                 if ((t2 - t1 > 5 * ut) && (t2 - t1 < 7 * ut)) {
                     // determine if button pressed was Y or N
                     // else ask the question again
@@ -100,8 +100,7 @@ int main(void) {
                     veryLongPress();
                 }
                 // to reset in case you made a mistake
-                if ((t2 - t1 > 10 * ut))
-                    resetPress();
+                if ((t2 - t1 > 10 * ut)) resetPress();
             }
         }
 
@@ -109,7 +108,7 @@ int main(void) {
         question2();
         // loop to check button state
         while (state) {
-            //question output
+            // question output
             if (debounce1()) {
                 // find when the button was pressed
                 t1 = HAL_GetTick();
@@ -118,12 +117,11 @@ int main(void) {
                 // find when it was released and for how long
                 t2 = HAL_GetTick();
                 // if the time difference is a dit (accounting for human error)
-                if ((t2 - t1) < 1.5 * ut)
-                    shortPress();
+                if ((t2 - t1) < 1.5 * ut) shortPress();
                 // if the time difference is a dash (accounting for human error)
-                if (((t2 - t1) > 2 * ut) && ((t2 - t1) < 4 * ut))
-                    longPress();
-                // if the time difference is an enter (accounting for human error)
+                if (((t2 - t1) > 2 * ut) && ((t2 - t1) < 4 * ut)) longPress();
+                // if the time difference is an enter (accounting for human
+                // error)
                 if ((t2 - t1 > 5 * ut) && (t2 - t1 < 7 * ut)) {
                     // determine if button pressed was Y or N
                     // else ask the question again
@@ -138,8 +136,7 @@ int main(void) {
                     veryLongPress();
                 }
                 // to reset in case you made a mistake
-                if ((t2 - t1 > 10 * ut))
-                    resetPress();
+                if ((t2 - t1 > 10 * ut)) resetPress();
             }
         }
 
@@ -147,7 +144,7 @@ int main(void) {
         question3();
         // loop to check button state
         while (state) {
-            //question output
+            // question output
             if (debounce1()) {
                 // find when the button was pressed
                 t1 = HAL_GetTick();
@@ -156,12 +153,11 @@ int main(void) {
                 // find when it was released and for how long
                 t2 = HAL_GetTick();
                 // if the time difference is a dit (accounting for human error)
-                if ((t2 - t1) < 1.5 * ut)
-                    shortPress();
+                if ((t2 - t1) < 1.5 * ut) shortPress();
                 // if the time difference is a dash (accounting for human error)
-                if (((t2 - t1) > 2 * ut) && ((t2 - t1) < 4 * ut))
-                    longPress();
-                // if the time difference is an enter (accounting for human error)
+                if (((t2 - t1) > 2 * ut) && ((t2 - t1) < 4 * ut)) longPress();
+                // if the time difference is an enter (accounting for human
+                // error)
                 if ((t2 - t1 > 5 * ut) && (t2 - t1 < 7 * ut)) {
                     // determine if button pressed was Y or N
                     // else ask the question again
@@ -176,8 +172,7 @@ int main(void) {
                     veryLongPress();
                 }
                 // to reset in case you made a mistake
-                if ((t2 - t1 > 10 * ut))
-                    resetPress();
+                if ((t2 - t1 > 10 * ut)) resetPress();
             }
         }
 
@@ -185,7 +180,7 @@ int main(void) {
         question4();
         // loop to check button state
         while (state) {
-            //question output
+            // question output
             if (debounce1()) {
                 // find when the button was pressed
                 t1 = HAL_GetTick();
@@ -194,12 +189,11 @@ int main(void) {
                 // find when it was released and for how long
                 t2 = HAL_GetTick();
                 // if the time difference is a dit (accounting for human error)
-                if ((t2 - t1) < 1.5 * ut)
-                    shortPress();
+                if ((t2 - t1) < 1.5 * ut) shortPress();
                 // if the time difference is a dash (accounting for human error)
-                if (((t2 - t1) > 2 * ut) && ((t2 - t1) < 4 * ut))
-                    longPress();
-                // if the time difference is an enter (accounting for human error)
+                if (((t2 - t1) > 2 * ut) && ((t2 - t1) < 4 * ut)) longPress();
+                // if the time difference is an enter (accounting for human
+                // error)
                 if ((t2 - t1 > 5 * ut) && (t2 - t1 < 7 * ut)) {
                     // determine if button pressed was Y or N
                     // else ask the question again
@@ -214,8 +208,7 @@ int main(void) {
                     veryLongPress();
                 }
                 // to reset in case you made a mistake
-                if ((t2 - t1 > 10 * ut))
-                    resetPress();
+                if ((t2 - t1 > 10 * ut)) resetPress();
             }
         }
 
@@ -223,7 +216,7 @@ int main(void) {
         question5();
         // loop to check button state
         while (state) {
-            //question output
+            // question output
             if (debounce1()) {
                 // find when the button was pressed
                 t1 = HAL_GetTick();
@@ -232,12 +225,11 @@ int main(void) {
                 // find when it was released and for how long
                 t2 = HAL_GetTick();
                 // if the time difference is a dit (accounting for human error)
-                if ((t2 - t1) < 1.5 * ut)
-                    shortPress();
+                if ((t2 - t1) < 1.5 * ut) shortPress();
                 // if the time difference is a dash (accounting for human error)
-                if (((t2 - t1) > 2 * ut) && ((t2 - t1) < 4 * ut))
-                    longPress();
-                // if the time difference is an enter (accounting for human error)
+                if (((t2 - t1) > 2 * ut) && ((t2 - t1) < 4 * ut)) longPress();
+                // if the time difference is an enter (accounting for human
+                // error)
                 if ((t2 - t1 > 5 * ut) && (t2 - t1 < 7 * ut)) {
                     // determine if button pressed was Y or N
                     // else ask the question again
@@ -252,8 +244,7 @@ int main(void) {
                     veryLongPress();
                 }
                 // to reset in case you made a mistake
-                if ((t2 - t1 > 10 * ut))
-                    resetPress();
+                if ((t2 - t1 > 10 * ut)) resetPress();
             }
         }
 
@@ -261,7 +252,7 @@ int main(void) {
         question6();
         // loop to check button state
         while (state) {
-            //question output
+            // question output
             if (debounce1()) {
                 // find when the button was pressed
                 t1 = HAL_GetTick();
@@ -270,12 +261,11 @@ int main(void) {
                 // find when it was released and for how long
                 t2 = HAL_GetTick();
                 // if the time difference is a dit (accounting for human error)
-                if ((t2 - t1) < 1.5 * ut)
-                    shortPress();
+                if ((t2 - t1) < 1.5 * ut) shortPress();
                 // if the time difference is a dash (accounting for human error)
-                if (((t2 - t1) > 2 * ut) && ((t2 - t1) < 4 * ut))
-                    longPress();
-                // if the time difference is an enter (accounting for human error)
+                if (((t2 - t1) > 2 * ut) && ((t2 - t1) < 4 * ut)) longPress();
+                // if the time difference is an enter (accounting for human
+                // error)
                 if ((t2 - t1 > 5 * ut) && (t2 - t1 < 7 * ut)) {
                     // determine if button pressed was Y or N
                     // else ask the question again
@@ -290,8 +280,7 @@ int main(void) {
                     veryLongPress();
                 }
                 // to reset in case you made a mistake
-                if ((t2 - t1 > 10 * ut))
-                    resetPress();
+                if ((t2 - t1 > 10 * ut)) resetPress();
             }
         }
 
@@ -380,7 +369,8 @@ void resetPress() {
 bool debounce1() {
     // tracks the state of the variable
     static uint16_t state = 0;
-    // shifts in the state of the button and applies a mask to ignore the bits from the left
+    // shifts in the state of the button and applies a mask to ignore the bits
+    // from the left
     state = (state << 1) | HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) | 0xfe00;
     // once the button has stopped jumping 8 times in a row, it will return true
     return (state == 0xff00);
@@ -389,7 +379,8 @@ bool debounce1() {
 bool debounce2() {
     // tracks the state of the variable
     static uint16_t state = 0;
-    // shifts in the state of the button and applies a mask to ignore the bits from the left
+    // shifts in the state of the button and applies a mask to ignore the bits
+    // from the left
     state = (state << 1) | !HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) | 0xfe00;
     // once the button has stopped jumping 8 times in a row, it will return true
     return (state == 0xff00);
@@ -398,7 +389,8 @@ bool debounce2() {
 // This function is called by the HAL once every millisecond
 void SysTick_Handler(void) {
     HAL_IncTick();  // tell HAL that a new tick has happened
-                    // we can do other things in here too if we need to, but be careful
+                    // we can do other things in here too if we need to, but be
+                    // careful
 }
 
 // transmits the morse code to the LED
@@ -1240,463 +1232,52 @@ char printMorse(char let) {
     }
 }
 
-// outputs question 1
+//
 void question1() {
-    printMorse('D');
-    printMorse('O');
-
-    printMorse('Y');
-    printMorse('O');
-    printMorse('U');
-
-    printMorse('H');
-    printMorse('A');
-    printMorse('V');
-    printMorse('E');
-
-    printMorse('A');
-    printMorse('N');
-    printMorse('Y');
-
-    printMorse('O');
-    printMorse('F');
-
-    printMorse('T');
-    printMorse('H');
-    printMorse('E');
-
-    printMorse('F');
-    printMorse('O');
-    printMorse('L');
-    printMorse('L');
-    printMorse('O');
-    printMorse('W');
-    printMorse('I');
-    printMorse('N');
-    printMorse('G');
-
-    printMorse('S');
-    printMorse('Y');
-    printMorse('M');
-    printMorse('P');
-    printMorse('T');
-    printMorse('O');
-    printMorse('M');
-    printMorse('S');
-
-    printMorse('F');
-    printMorse('E');
-    printMorse('V');
-    printMorse('E');
-    printMorse('R');
-
-    printMorse('T');
-    printMorse('I');
-    printMorse('R');
-    printMorse('E');
-    printMorse('D');
-    printMorse('N');
-    printMorse('E');
-    printMorse('S');
-    printMorse('S');
-
-    printMorse('S');
-    printMorse('O');
-    printMorse('R');
-    printMorse('E');
-
-    printMorse('T');
-    printMorse('H');
-    printMorse('R');
-    printMorse('O');
-    printMorse('A');
-    printMorse('T');
-
-    printMorse('M');
-    printMorse('U');
-    printMorse('S');
-    printMorse('C');
-    printMorse('L');
-    printMorse('E');
-
-    printMorse('P');
-    printMorse('A');
-    printMorse('I');
-    printMorse('N');
-
-    printMorse('N');
-    printMorse('A');
-    printMorse('U');
-    printMorse('S');
-    printMorse('E');
-    printMorse('A');
+    char str[] = "hi!";
+    for (int i = 0; str[i] != '\0'; ++i) {
+        printMorse(str[i]);
+    }
 }
 
-// outputs question 2
 void question2() {
-    printMorse('H');
-    printMorse('A');
-    printMorse('V');
-    printMorse('E');
-
-    printMorse('Y');
-    printMorse('O');
-    printMorse('U');
-
-    printMorse('T');
-    printMorse('R');
-    printMorse('A');
-    printMorse('V');
-    printMorse('E');
-    printMorse('L');
-    printMorse('L');
-    printMorse('E');
-    printMorse('D');
-
-    printMorse('O');
-    printMorse('U');
-    printMorse('T');
-    printMorse('S');
-    printMorse('I');
-    printMorse('D');
-    printMorse('E');
-
-    printMorse('O');
-    printMorse('F');
-
-    printMorse('C');
-    printMorse('A');
-    printMorse('N');
-    printMorse('A');
-    printMorse('D');
-    printMorse('A');
-
-    printMorse('I');
-    printMorse('N');
-
-    printMorse('T');
-    printMorse('H');
-    printMorse('E');
-
-    printMorse('P');
-    printMorse('A');
-    printMorse('S');
-    printMorse('T');
-
-    printMorse('2');
-
-    printMorse('W');
-    printMorse('E');
-    printMorse('E');
-    printMorse('K');
-    printMorse('S');
-
-    printMorse('A');
-    printMorse('N');
-    printMorse('D');
-
-    printMorse('B');
-    printMorse('E');
-    printMorse('E');
-    printMorse('N');
-
-    printMorse('A');
-    printMorse('D');
-    printMorse('V');
-    printMorse('I');
-    printMorse('S');
-    printMorse('E');
-    printMorse('D');
-
-    printMorse('T');
-    printMorse('O');
-
-    printMorse('Q');
-    printMorse('U');
-    printMorse('A');
-    printMorse('R');
-    printMorse('A');
-    printMorse('N');
-    printMorse('T');
-    printMorse('I');
-    printMorse('N');
-    printMorse('E');
+    char str[] = "hi!";
+    for (int i = 0; str[i] != '\0'; ++i) {
+        printMorse(str[i]);
+    }
 }
 
-// outputs question 3
 void question3() {
-    printMorse('I');
-    printMorse('N');
-
-    printMorse('T');
-    printMorse('H');
-    printMorse('E');
-
-    printMorse('L');
-    printMorse('A');
-    printMorse('S');
-    printMorse('T');
-
-    printMorse('1');
-    printMorse('0');
-
-    printMorse('D');
-    printMorse('A');
-    printMorse('Y');
-    printMorse('S');
-
-    printMorse('H');
-    printMorse('A');
-    printMorse('V');
-    printMorse('E');
-
-    printMorse('Y');
-    printMorse('O');
-    printMorse('U');
-
-    printMorse('B');
-    printMorse('E');
-    printMorse('E');
-    printMorse('N');
-
-    printMorse('I');
-    printMorse('N');
-
-    printMorse('C');
-    printMorse('O');
-    printMorse('N');
-    printMorse('T');
-    printMorse('A');
-    printMorse('C');
-    printMorse('T');
-
-    printMorse('W');
-    printMorse('I');
-    printMorse('T');
-    printMorse('H');
-
-    printMorse('A');
-    printMorse('N');
-    printMorse('Y');
-    printMorse('O');
-    printMorse('N');
-    printMorse('E');
-
-    printMorse('W');
-    printMorse('I');
-    printMorse('T');
-    printMorse('H');
-
-    printMorse('C');
-    printMorse('O');
-    printMorse('V');
-    printMorse('I');
-    printMorse('D');
+    char str[] = "hi!";
+    for (int i = 0; str[i] != '\0'; ++i) {
+        printMorse(str[i]);
+    }
 }
 
-// outputs question 4
 void question4() {
-    printMorse('A');
-    printMorse('R');
-    printMorse('E');
-
-    printMorse('Y');
-    printMorse('O');
-    printMorse('U');
-
-    printMorse('S');
-    printMorse('U');
-    printMorse('P');
-    printMorse('P');
-    printMorse('O');
-    printMorse('S');
-    printMorse('E');
-    printMorse('D');
-
-    printMorse('T');
-    printMorse('O');
-
-    printMorse('B');
-    printMorse('E');
-
-    printMorse('S');
-    printMorse('E');
-    printMorse('L');
-    printMorse('F');
-
-    printMorse('I');
-    printMorse('S');
-    printMorse('O');
-    printMorse('L');
-    printMorse('A');
-    printMorse('T');
-    printMorse('I');
-    printMorse('N');
-    printMorse('G');
+    char str[] = "hi!";
+    for (int i = 0; str[i] != '\0'; ++i) {
+        printMorse(str[i]);
+    }
 }
 
-// outputs question 5
 void question5() {
-    printMorse('I');
-    printMorse('N');
-
-    printMorse('T');
-    printMorse('H');
-    printMorse('E');
-
-    printMorse('L');
-    printMorse('A');
-    printMorse('S');
-    printMorse('T');
-
-    printMorse('2');
-
-    printMorse('W');
-    printMorse('E');
-    printMorse('E');
-    printMorse('K');
-    printMorse('S');
-
-    printMorse('H');
-    printMorse('A');
-    printMorse('V');
-    printMorse('E');
-
-    printMorse('Y');
-    printMorse('O');
-    printMorse('U');
-
-    printMorse('R');
-    printMorse('E');
-    printMorse('C');
-    printMorse('E');
-    printMorse('I');
-    printMorse('V');
-    printMorse('E');
-    printMorse('D');
-
-    printMorse('A');
-
-    printMorse('C');
-    printMorse('O');
-    printMorse('V');
-    printMorse('I');
-    printMorse('D');
-
-    printMorse('E');
-    printMorse('X');
-    printMorse('P');
-    printMorse('O');
-    printMorse('S');
-    printMorse('U');
-    printMorse('R');
-    printMorse('E');
-
-    printMorse('N');
-    printMorse('O');
-    printMorse('T');
-    printMorse('I');
-    printMorse('F');
-    printMorse('I');
-    printMorse('C');
-    printMorse('A');
-    printMorse('T');
-    printMorse('I');
-    printMorse('O');
-    printMorse('N');
-
-    printMorse('O');
-    printMorse('N');
-
-    printMorse('A');
-    printMorse('N');
-    printMorse('Y');
-
-    printMorse('D');
-    printMorse('E');
-    printMorse('V');
-    printMorse('I');
-    printMorse('C');
-    printMorse('E');
+    char str[] = "hi!";
+    for (int i = 0; str[i] != '\0'; ++i) {
+        printMorse(str[i]);
+    }
 }
 
-// outputs question 6
 void question6() {
-    printMorse('I');
-    printMorse('F');
+    char str[] = "hi!";
+    for (int i = 0; str[i] != '\0'; ++i) {
+        printMorse(str[i]);
+    }
+}
 
-    printMorse('Y');
-    printMorse('O');
-    printMorse('U');
-
-    printMorse('A');
-    printMorse('N');
-    printMorse('S');
-    printMorse('W');
-    printMorse('E');
-    printMorse('R');
-    printMorse('E');
-    printMorse('D');
-
-    printMorse('Y');
-    printMorse('E');
-    printMorse('S');
-
-    printMorse('T');
-    printMorse('O');
-
-    printMorse('A');
-    printMorse('N');
-    printMorse('Y');
-
-    printMorse('O');
-    printMorse('F');
-
-    printMorse('T');
-    printMorse('H');
-    printMorse('E');
-    printMorse('S');
-    printMorse('E');
-
-    printMorse('Q');
-    printMorse('U');
-    printMorse('E');
-    printMorse('S');
-    printMorse('T');
-    printMorse('I');
-    printMorse('O');
-    printMorse('N');
-    printMorse('S');
-
-    printMorse('P');
-    printMorse('L');
-    printMorse('E');
-    printMorse('A');
-    printMorse('S');
-    printMorse('E');
-
-    printMorse('G');
-    printMorse('I');
-    printMorse('V');
-    printMorse('E');
-
-    printMorse('U');
-    printMorse('S');
-
-    printMorse('Y');
-    printMorse('O');
-    printMorse('U');
-    printMorse('R');
-
-    printMorse('R');
-    printMorse('O');
-    printMorse('O');
-    printMorse('M');
-
-    printMorse('N');
-    printMorse('U');
-    printMorse('M');
-    printMorse('B');
-    printMorse('E');
-    printMorse('R');
+void question7() {
+    char str[] = "hi!";
+    for (int i = 0; str[i] != '\0'; ++i) {
+        printMorse(str[i]);
+    }
 }
