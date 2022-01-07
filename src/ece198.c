@@ -1,6 +1,7 @@
 // Support routines for ECE 198 (University of Waterloo)
 
-// Written by Bernie Roehl, July 2021
+// Original initalization of pins written by Bernie Roehl, July 2021
+// All other code-- unless specified written by Henry 
 
 #include <stdbool.h>  // for bool datatype
 
