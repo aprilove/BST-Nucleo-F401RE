@@ -1,6 +1,7 @@
 // Sample code for ECE 198
 
-// Written by Bernie Roehl, August 2021
+// Inialization written by Bernie Roehl, August 2021
+// All other code-- unless specified written by Henry 
 
 // This file contains code for a number of different examples.
 // Each one is surrounded by an #ifdef ... #endif block inside of main().
@@ -393,6 +394,7 @@ void SysTick_Handler(void) {
                     // careful
 }
 
+// written by Jinha Kim, September 2021
 // transmits the morse code to the LED
 char printMorse(char let) {
     // a switch to check which letter was inputted
